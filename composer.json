@@ -1,0 +1,40 @@
+{
+    "name": "webiny/analytics-db",
+    "type": "library",
+    "description": "Library to help you with storing different time series analytics data.",
+    "keywords": [
+        "analytics",
+        "time series"
+    ],
+    "homepage": "http://www.webiny.com/",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Sven Al Hamad",
+            "email": "sven@webiny.com"
+        },
+        {
+            "name": "Pavel Denisjuk",
+            "email": "pavel@webiny.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "require": {
+        "php": ">=5.5.9",
+        "webiny/mongo": "^1.3"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "~4",
+        "mybuilder/phpunit-accelerator": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "Webiny\\AnalyticsDb\\": "src/Webiny/AnalyticsDb/"
+        }
+    },
+    "extras": {
+        "branch-alias": {
+            "dev-master": "master-dev"
+        }
+    }
+}

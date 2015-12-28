@@ -12,6 +12,10 @@ namespace Webiny\AnalyticsDb;
 use Webiny\Component\Mongo\Index\CompoundIndex;
 use Webiny\Component\Mongo\Mongo;
 
+/**
+ * Class AnalyticsDb
+ * @package Webiny\AnalyticsDb
+ */
 class AnalyticsDb
 {
     const ADB_STATS_DAILY = 'AnalyticsDbStatsDaily';
@@ -34,6 +38,12 @@ class AnalyticsDb
     private $year;
     private $monthTs;
 
+
+    /**
+     * Base constructor.
+     *
+     * @param Mongo $mongo
+     */
     public function __construct(Mongo $mongo)
     {
         $this->mongo = $mongo;
@@ -45,6 +55,12 @@ class AnalyticsDb
         $this->createCollections();
     }
 
+    /**
+     * Set the timestamp which will be used to store the data.
+     * By default current time is used.
+     *
+     * @param int $unixTs
+     */
     public function setTimestamp($unixTs)
     {
         $this->ts = strtotime(date('Y-m-d', $unixTs));
@@ -54,15 +70,18 @@ class AnalyticsDb
     }
 
     /**
-     * @param     $name
-     * @param int $ref
-     * @param int $increment
+     * Add a log to the buffer.
+     * Note: the data is not saved until you call the save method.
+     *
+     * @param string $entity
+     * @param int    $ref
+     * @param int    $increment
      *
      * @return LogEntry
      */
-    public function log($name, $ref = 0, $increment = 1)
+    public function log($entity, $ref = 0, $increment = 1)
     {
-        $entry = new LogEntry($name);
+        $entry = new LogEntry($entity);
         $entry->setRef($ref);
         $entry->setIncrement($increment);
 
@@ -71,6 +90,9 @@ class AnalyticsDb
         return $entry;
     }
 
+    /**
+     * Save all the entries from the buffer.
+     */
     public function save()
     {
         $entries = $this->logBuffer->getEntries();
@@ -158,50 +180,44 @@ class AnalyticsDb
         $this->logBuffer = new LogBuffer();
     }
 
-    public function getQueryBuilder($entity, $ref, array $dateRange)
+    /**
+     * Query the analytics data.
+     *
+     * @param string     $entity
+     * @param string|int $ref
+     * @param array      $dateRange [fromTimestamp, toTimestamp]
+     *
+     * @return QueryBuilder
+     */
+    public function getQueryBuilder($entity, $ref = 0, array $dateRange)
     {
         return new QueryBuilder($this->mongo, $entity, $ref, $dateRange);
     }
 
+    /**
+     * Creates the necessary indexes and collections if they don't exist.
+     */
     private function createCollections()
     {
-
         $collections = $this->mongo->getCollectionNames()->toArray();
         if (!array_search(self::ADB_STATS_DAILY, $collections)) {
+
             // create collections
             $this->mongo->createCollection(self::ADB_STATS_DAILY);
             $this->mongo->createCollection(self::ADB_STATS_MONTHLY);
             $this->mongo->createCollection(self::ADB_DIMS);
 
-            // ensure stats indexes
-
+            // ensure indexes
             $this->mongo->createIndex(self::ADB_STATS_DAILY,
                 new CompoundIndex('entityTsEntry', ['name', 'ref', 'ts'], true, true));
 
             $this->mongo->createIndex(self::ADB_STATS_MONTHLY,
                 new CompoundIndex('entityMonthEntry', ['name', 'ref', 'ts'], true, true));
 
-            // match index -> for group queries
-            /*$this->mongo->createIndex(self::ADB_STATS, new CompoundIndex('entityRef', ['name', 'ref'], true));
-
-            // sort and group by indexes
-            $this->mongo->createIndex(self::ADB_STATS, new SingleIndex('month', 'month', true));
-            $this->mongo->createIndex(self::ADB_STATS, new SingleIndex('entityName', 'name', true));
-            $this->mongo->createIndex(self::ADB_STATS, new SingleIndex('year', 'year', true));
-            */
-
-            // ?
-            //$this->mongo->createIndex(self::ADB_STATS, new CompoundIndex('EntityTs', ['ts', 'name'], true));
-
-
-            // ensure dimension indexes
-
             $this->mongo->createIndex(self::ADB_DIMS,
                 new CompoundIndex('dimension', ['name', 'value', 'entity', 'ts'], true, true));
 
             $this->mongo->createIndex(self::ADB_DIMS, new CompoundIndex('dimension_entity', ['entity', 'ts'], true));
-
-
         }
     }
 }

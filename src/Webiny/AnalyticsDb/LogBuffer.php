@@ -9,8 +9,15 @@
 
 namespace Webiny\AnalyticsDb;
 
+/**
+ * Class LogBuffer
+ * @package Webiny\AnalyticsDb
+ */
 class LogBuffer
 {
+    /**
+     * @var array List of log entries.
+     */
     private $entries;
 
     public function __construct()
@@ -18,11 +25,21 @@ class LogBuffer
         $this->entries = [];
     }
 
+    /**
+     * Returns the list of entries.
+     *
+     * @return array
+     */
     public function getEntries()
     {
         return $this->entries;
     }
 
+    /**
+     * Add a log entry to the list.
+     *
+     * @param LogEntry $logEntry
+     */
     public function addLogEntry(LogEntry $logEntry)
     {
         $this->entries[] = $logEntry;

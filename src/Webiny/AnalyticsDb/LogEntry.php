@@ -9,13 +9,38 @@
 
 namespace Webiny\AnalyticsDb;
 
+/**
+ * Class LogEntry
+ * @package Webiny\AnalyticsDb
+ */
 class LogEntry
 {
+    /**
+     * @var string Entry name. (entity)
+     */
     private $name;
+
+    /**
+     * @var string|int Entry referral value.
+     */
     private $ref;
+
+    /**
+     * @var array List of dimensions associated to the entry.
+     */
     private $dimensions;
+
+    /**
+     * @var int For how much to increase the entry count.
+     */
     private $increment;
 
+
+    /**
+     * Base constructor.
+     *
+     * @param $name
+     */
     public function __construct($name)
     {
         $this->name = $name;
@@ -23,31 +48,65 @@ class LogEntry
         $this->increment = 1;
     }
 
+    /**
+     * Returns entry name.
+     *
+     * @return string
+     */
     public function getName()
     {
         return $this->name;
     }
 
+    /**
+     * For how much to increase the entry count.
+     *
+     * @param $increment
+     */
     public function setIncrement($increment)
     {
         $this->increment = $increment;
     }
 
+    /**
+     * Returns the increment value.
+     *
+     * @return int
+     */
     public function getIncrement()
     {
         return $this->increment;
     }
 
+    /**
+     * Set the referral value.
+     *
+     * @param string|int $ref
+     */
     public function setRef($ref)
     {
         $this->ref = $ref;
     }
 
+    /**
+     * Returns referral value.
+     *
+     * @return int|string
+     */
     public function getRef()
     {
         return $this->ref;
     }
 
+    /**
+     * Add a dimension to the entry.
+     *
+     * @param string $name
+     * @param string $value
+     * @param int    $increment
+     *
+     * @return $this
+     */
     public function addDimension($name, $value, $increment = 1)
     {
         $dimension = new LogDimension($name, $value);
@@ -58,6 +117,11 @@ class LogEntry
         return $this;
     }
 
+    /**
+     * Returns a list of associated dimensions.
+     *
+     * @return array
+     */
     public function getDimensions()
     {
         return $this->dimensions;

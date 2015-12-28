@@ -14,15 +14,28 @@ class LogEntry
     private $name;
     private $ref;
     private $dimensions;
+    private $increment;
 
     public function __construct($name)
     {
         $this->name = $name;
+        $this->dimensions = [];
+        $this->increment = 1;
     }
 
     public function getName()
     {
         return $this->name;
+    }
+
+    public function setIncrement($increment)
+    {
+        $this->increment = $increment;
+    }
+
+    public function getIncrement()
+    {
+        return $this->increment;
     }
 
     public function setRef($ref)
@@ -35,9 +48,14 @@ class LogEntry
         return $this->ref;
     }
 
-    public function setDimensions($dimensions)
+    public function addDimension($name, $value, $increment = 1)
     {
-        $this->dimensions = $dimensions;
+        $dimension = new LogDimension($name, $value);
+        $dimension->setIncrement($increment);
+
+        $this->dimensions[] = $dimension;
+
+        return $this;
     }
 
     public function getDimensions()

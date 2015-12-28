@@ -53,8 +53,8 @@ For example, for this use case:
 ```php
 $analytics->log('visitor')->addDimension('browser', 'chrome')->addDimension('country', 'UK');
 ```
-You can know who many visitors you had for a given date range, and you can group that result either by day, or by month.
-Since you stored some data in dimensions, you can also know, how many users used `chrome` vs, for example `firefox` or `ie` 
+You can know how many visitors you had for a given date range, and you can group that result either by day, or by month.
+Since you stored some data in dimensions, you can also know, how many users used `chrome` vs, for example `firefox` or `ie`, 
 and then you can cross reference that to the total number of your visitors.
  
 You can also assign a referral value to the log, for example, you can track per-page analytics like so:
@@ -64,13 +64,17 @@ $analytics->log('page', 123)->addDimension('browser', 'chrome')->addDimension('c
 ```
 This will track a visitor for page with the id of 123. And then later you can query the analytics data for only that page.
 
+Some best practice is not to query data with a large set of different referrals. For example if you want to know how many visitors in total
+you had on your website, don't query and then sum the number of visitors of all your pages. Instead store 2 different analytics data, one for
+pages, and one for visitors in general. 
+
 By default the `log` method will increment the value by 1, but in some cases, for example when you wish to track revenue, 
  you want to specify the increment value, and this is done by using the 3rd parameter, like so:
  
 ```php
 $analytics->log('revenue', 0, 120.00);
 ```
-This will increase the `revenue` counter by `120.00` (float). 
+This will increase the `revenue` counter by `120.00` (float value is supported). 
 
 
 ## Querying data
@@ -96,7 +100,7 @@ $result = $qb->getStats();
 $result = $qb->getStats(QueryBuilder::STATS_GROUPBY_MONTH);
 ```
 
-To query dimensions, you use the `getDimension` method, like so:
+To query dimensions, use the `getDimension` method, like so:
 
 ```php
 $qb = $analytics->getQueryBuilder('revenue', 0, DateHelper::rangeQ1());
@@ -104,7 +108,7 @@ $qb = $analytics->getQueryBuilder('revenue', 0, DateHelper::rangeQ1());
 // get total revenue for Q1, grouped by month
 $result = $qb->getStats(QueryBuilder::STATS_GROUPBY_MONTH);
 
-// show me the revenue breakdown by item tipe (eg, product, tax)
+// show me the revenue breakdown by item type (eg, product, tax)
 $result = $qb->getDimension(null, null, QueryBuilder::DIM_GROUPBY_NAME);
 
 // show me total revenue just from products
@@ -127,7 +131,7 @@ License > [MIT](LICENSE)
 
 To run unit tests, you need to use the following command:
 ```
-$ cd path/to/GeoIp/
+$ cd path/to/AnalyticsDb/
 $ composer install
 $ phpunit
 ```

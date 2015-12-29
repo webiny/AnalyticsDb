@@ -102,7 +102,8 @@ class DateHelper
      */
     public static function rangeLast7Days()
     {
-        return [self::today() - (86400 * 7), self::today()];
+        $today = self::today()[0];
+        return [$today - (86400 * 7), $today];
     }
 
     /**
@@ -112,7 +113,8 @@ class DateHelper
      */
     public static function rangeLast14Days()
     {
-        return [self::today() - (86400 * 14), self::today()];
+        $today = self::today()[0];
+        return [$today - (86400 * 14), $today];
     }
 
     /**
@@ -122,7 +124,8 @@ class DateHelper
      */
     public static function rangeLast30Days()
     {
-        return [self::today() - (86400 * 30), self::today()];
+        $today = self::today()[0];
+        return [$today - (86400 * 30), $today];
     }
 
     /**
@@ -132,7 +135,8 @@ class DateHelper
      */
     public static function rangeLast60Days()
     {
-        return [self::today() - (86400 * 60), self::today()];
+        $today = self::today()[0];
+        return [$today - (86400 * 60), $today];
     }
 
     /**
@@ -142,7 +146,8 @@ class DateHelper
      */
     public static function rangeLast90Days()
     {
-        return [self::today() - (86400 * 90), self::today()];
+        $today = self::today()[0];
+        return [$today - (86400 * 90), $today];
     }
 
     /**

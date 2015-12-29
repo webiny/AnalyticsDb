@@ -73,7 +73,7 @@ class AnalyticsDb
      * Add a log to the buffer.
      * Note: the data is not saved until you call the save method.
      *
-     * @param string $entity
+     * @param string $entity Entity name.
      * @param int    $ref
      * @param int    $increment
      *
@@ -115,15 +115,15 @@ class AnalyticsDb
         foreach ($entries as $e) {
             // build entry
             $entry = $entrySkeleton;
-            $entry['name'] = $e->getName();
+            $entry['entity'] = $e->getName();
             $entry['ref'] = $e->getRef();
 
             // insert or update the DAILY stat
             $this->mongo->update(self::ADB_STATS_DAILY, // match
                 [
-                    'name' => $e->getName(),
-                    'ref'  => $e->getRef(),
-                    'ts'   => $this->ts
+                    'entity' => $e->getName(),
+                    'ref'    => $e->getRef(),
+                    'ts'     => $this->ts
                 ], // update
                 [
                     '$inc'         => ['count' => $e->getIncrement()],
@@ -137,9 +137,9 @@ class AnalyticsDb
             $entry['year'] = $this->year;
             $this->mongo->update(self::ADB_STATS_MONTHLY, // match
                 [
-                    'name' => $e->getName(),
-                    'ref'  => $e->getRef(),
-                    'ts'   => $this->monthTs
+                    'entity' => $e->getName(),
+                    'ref'    => $e->getRef(),
+                    'ts'     => $this->monthTs
                 ], // update
                 [
                     '$inc'         => ['count' => $e->getIncrement()],
@@ -189,9 +189,9 @@ class AnalyticsDb
      *
      * @return QueryBuilder
      */
-    public function getQueryBuilder($entity, $ref = 0, array $dateRange)
+    public function query($entity, $ref = 0, array $dateRange)
     {
-        return new QueryBuilder($this->mongo, $entity, $ref, $dateRange);
+        return new Query($this->mongo, $entity, $ref, $dateRange);
     }
 
     /**
@@ -209,10 +209,10 @@ class AnalyticsDb
 
             // ensure indexes
             $this->mongo->createIndex(self::ADB_STATS_DAILY,
-                new CompoundIndex('entityTsEntry', ['name', 'ref', 'ts'], true, true));
+                new CompoundIndex('entityTsEntry', ['entity', 'ref', 'ts'], true, true));
 
             $this->mongo->createIndex(self::ADB_STATS_MONTHLY,
-                new CompoundIndex('entityMonthEntry', ['name', 'ref', 'ts'], true, true));
+                new CompoundIndex('entityMonthEntry', ['entity', 'ref', 'ts'], true, true));
 
             $this->mongo->createIndex(self::ADB_DIMS,
                 new CompoundIndex('dimension', ['name', 'value', 'entity', 'ts'], true, true));

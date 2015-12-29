@@ -39,7 +39,7 @@ class LogEntry
     /**
      * Base constructor.
      *
-     * @param $name
+     * @param string $name Entity name.
      */
     public function __construct($name)
     {

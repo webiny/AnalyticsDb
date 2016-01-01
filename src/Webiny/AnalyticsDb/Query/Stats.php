@@ -18,6 +18,18 @@ use Webiny\AnalyticsDb\AnalyticsDb;
 class Stats extends AbstractQuery
 {
     /**
+     * Group stat records by ref id.
+     *
+     * @return $this
+     */
+    public function groupByRef()
+    {
+        $this->pipeline['$group'] = ['_id' => '$ref', 'totalCount' => ['$sum' => '$count']];
+
+        return $this;
+    }
+
+    /**
      * Sets the lookup to the daily collection.
      *
      * @return $this

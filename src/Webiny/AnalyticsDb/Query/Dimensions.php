@@ -113,6 +113,10 @@ class Dimensions extends AbstractQuery
             'total'  => 1
         ];
 
+        if (!empty($this->ref)) {
+            $this->pipeline['$project']['count.' . $this->ref] = 1;
+        }
+
         // $group
         $this->pipeline['$group'] = ['_id' => '$ts', 'totalCount' => ['$sum' => $this->getSumField()]];
 

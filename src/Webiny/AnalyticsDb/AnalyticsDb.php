@@ -97,12 +97,12 @@ class AnalyticsDb
      */
     public function log($entity, $ref = 0, $increment = 1)
     {
-        if (!preg_match('/^([A-z0-9]+)$/', $entity)) {
-            throw new AnalyticsDbException('Entity name can only contain alphanumeric characters ([A-z0-9]).');
+        if (!preg_match('/^([A-z0-9\/\-]+)$/', $entity)) {
+            throw new AnalyticsDbException('Entity name can only contain ([A-z0-9\/\-]).');
         }
 
-        if (!preg_match('/^([A-z0-9]+)$/', $ref)) {
-            throw new AnalyticsDbException('Entity referrer can only contain alphanumeric characters ([A-z0-9]).');
+        if (!preg_match('/^([A-z0-9\/\-]+)$/', $ref)) {
+            throw new AnalyticsDbException('Entity referrer can only contain ([A-z0-9\/\-]).');
         }
 
         $entry = new LogEntry($entity);

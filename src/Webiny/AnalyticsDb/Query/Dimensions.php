@@ -77,6 +77,19 @@ class Dimensions extends AbstractQuery
     }
 
     /**
+     * Groups the records by timestamp.
+     *
+     * @overwrite
+     * @return $this
+     */
+    public function groupByTimestamp()
+    {
+        $this->pipeline['$group'] = ['_id' => '$ts', 'totalCount' => ['$sum' => $this->getSumField()]];
+
+        return $this;
+    }
+
+    /**
      * This is the callback method that is triggered after the constructor call.
      *
      * @return void

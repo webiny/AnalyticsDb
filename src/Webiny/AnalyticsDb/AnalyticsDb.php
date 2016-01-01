@@ -70,6 +70,21 @@ class AnalyticsDb
     }
 
     /**
+     * Returns the current timestamp.
+     *
+     * @return array Array containing time info.
+     */
+    public function getTimestamp()
+    {
+        return [
+            'ts'      => $this->ts,
+            'month'   => $this->month,
+            'year'    => $this->year,
+            'monthTs' => $this->monthTs
+        ];
+    }
+
+    /**
      * Add a log to the buffer.
      * Note: the data is not saved until you call the save method.
      *
@@ -85,9 +100,19 @@ class AnalyticsDb
         $entry->setRef($ref);
         $entry->setIncrement($increment);
 
-        $this->logBuffer->addLogEntry($entry);
+        $this->logBuffer->addEntry($entry);
 
         return $entry;
+    }
+
+    /**
+     * Returns log buffer.
+     *
+     * @return LogBuffer
+     */
+    public function getLogBuffer()
+    {
+        return $this->logBuffer;
     }
 
     /**
@@ -187,7 +212,7 @@ class AnalyticsDb
      * @param string|int $ref
      * @param array      $dateRange [fromTimestamp, toTimestamp]
      *
-     * @return QueryBuilder
+     * @return Query
      */
     public function query($entity, $ref = 0, array $dateRange)
     {
@@ -200,6 +225,7 @@ class AnalyticsDb
     private function createCollections()
     {
         $collections = $this->mongo->getCollectionNames()->toArray();
+
         if (!array_search(self::ADB_STATS_DAILY, $collections)) {
 
             // create collections

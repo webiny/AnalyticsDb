@@ -40,7 +40,7 @@ class LogBuffer
      *
      * @param LogEntry $logEntry
      */
-    public function addLogEntry(LogEntry $logEntry)
+    public function addEntry(LogEntry $logEntry)
     {
         $this->entries[] = $logEntry;
     }

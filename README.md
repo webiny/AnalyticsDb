@@ -23,17 +23,18 @@ $analytics->log('revenue', 0, 120.00)
 $analytics->save();
 
 // query data
+$query = $a->query('revenue', 0, DateHelper::rangeLast30Days());
+
 // get total number of visitors for the last 30 days, and group them by day
-$qb = $analytics->getQueryBuilder('visitors', 0, DateHelper::rangeLast30Days());
-$result = $qb->getStats();
+$result = $query->stats()->getResult();
 
 // get total number of visitors for the last year, and group them by month
-$qb = $analytics->getQueryBuilder('visitors', 0, DateHelper::rangeYear());
-$result = $qb->getStats(QueryBuilder::STATS_GROUPBY_MONTH);
+$query = $a->query('revenue', 0, DateHelper::rangeYear());
+$result = $query->stats()->monthly()->groupByTimestamp()->sortByTimestamp(1)->getResult();
 
 // get revenue for last quarter and group it by revenue type
-$qb = $analytics->getQueryBuilder('revenue', 0, DateHelper::rangeYear());
-$result = $qb->getDimension(null, null, QueryBuilder::DIM_GROUPBY_NAME);
+$query = $a->query('revenue', 0, DateHelper::rangeQ1());
+$result = $query->groupByDimensionName()->sortByCount(-1)->getResult();
 ```
 
 ## Dependencies
@@ -47,7 +48,7 @@ The data is stored using the `log` method. Note that data is not actually saved 
 
 To assign attributes to your data, for example you wish to increment the number of visitors on your site, but you also want  
 to store some attributes, like what browser the user used, and from which country he came from; for that you can use `dimensions`.
-Dimensions are also counters which can be queried and grouped. 
+Dimensions are also counters which can be queried. 
 
 For example, for this use case:
 ```php
@@ -62,7 +63,7 @@ You can also assign a referral value to the log, for example, you can track per-
 ```php
 $analytics->log('page', 123)->addDimension('browser', 'chrome')->addDimension('country', 'UK');
 ```
-This will track a visitor for page with the id of 123. And then later you can query the analytics data for only that page.
+This will track a visitor for page with the id of 123. And then later you can query the analytics data for that page.
 
 Some best practice is not to query data with a large set of different referrals. For example if you want to know how many visitors in total
 you had on your website, don't query and then sum the number of visitors of all your pages. Instead store 2 different analytics data, one for
@@ -79,46 +80,46 @@ This will increase the `revenue` counter by `120.00` (float value is supported).
 
 ## Querying data
 
-To query the data, you need to get an instance of the query builder, like so:
+To query the data, you need to get an instance of the `query`, like so:
 ```php
-$qb = $analytics->getQueryBuilder('visitors', 0, DateHelper::rangeLast30Days());
+$query = $a->query('revenue', 0, DateHelper::rangeLast30Days());
 ```
-For the query builder you have to specify the entity name, referral, and the date range.
+For the `query` you have to specify the entity name, referral, and the date range.
 There is a `DateHelper` class to help you in regards to some commonly used date ranges, but you can also specify your own custom range, 
 it is just an array with two unix timestamps `[dateFromTimestamp, dateToTimestamp]`.
 
-Once you have the query builder instance, you can get the results for the given range. By default the data is grouped by day, but you 
+Once you have the `query` instance, you can get the results for the given range. By default the data is grouped by day, but you 
 can also get it in a per-month format.
 
 ```php
-$qb = $analytics->getQueryBuilder('visitors', 0, DateHelper::rangeLast30Days());
+$query = $a->query('revenue', 0, DateHelper::rangeLast30Days());
 
 // get data by day
-$result = $qb->getStats();
+$result = $query->stats()->getResult();
 
 // get data by month
-$result = $qb->getStats(QueryBuilder::STATS_GROUPBY_MONTH);
+$result = $query->stats()->monthly()->getResult();
 ```
 
-To query dimensions, use the `getDimension` method, like so:
+To query dimensions, use the `dimension` method, like so:
 
 ```php
-$qb = $analytics->getQueryBuilder('revenue', 0, DateHelper::rangeQ1());
-
-// get total revenue for Q1, grouped by month
-$result = $qb->getStats(QueryBuilder::STATS_GROUPBY_MONTH);
+$query = $a->query('revenue', 0, DateHelper::rangeYear());
 
 // show me the revenue breakdown by item type (eg, product, tax)
-$result = $qb->getDimension(null, null, QueryBuilder::DIM_GROUPBY_NAME);
+$result = $query->dimension()->groupByDimensionName()->sortByCount(-1)->getResult();
 
 // show me total revenue just from products
-$result = $qb->getDimension('product');
+$result = $query->dimension('product')->getResult();
 
 // show me total revenue breakdown by product type
-$result = $qb->getDimension('product', null, QueryBuilder::DIM_GROUPBY_VALUE);
+$result = $query->dimension('product')->groupByDimensionValue()->sortByCount(-1)->getResult();
+
+// show me revenue for `HDD` product by days
+$result = $query->dimension('package', 'PAYG')->getResult();
 
 // show me total revenue for `HDD` product
-$result = $qb->getDimension('product', 'HDD');
+$result = $query->dimension('package', 'PAYG')->groupByDimensionName()->getResult();
 ```
 
 ## License and Contributions

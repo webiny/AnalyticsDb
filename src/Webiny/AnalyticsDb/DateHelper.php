@@ -34,13 +34,13 @@ class DateHelper
      */
     public static function rangeThisWeek()
     {
-        $ts = time();
+        $ts = strtotime(date('Y-m-d')) + 86400;
         do {
-            $startDate = date('u', $ts);
             $ts -= 86400;
-        } while ($startDate !== 0);
+            $startDate = date('N', $ts);
+        } while ($startDate != '1');
 
-        return [self::toTs($startDate), self::toTs($startDate + (86400 + 7))];
+        return [$ts, $ts + (86400 * 6)];
     }
 
     /**
@@ -52,7 +52,7 @@ class DateHelper
     {
         $thisWeek = self::rangeThisWeek();
 
-        return [self::toTs($thisWeek[0] - 86400), self::toTs($thisWeek[0] - (86400 * 7))];
+        return [$thisWeek[0] - (86400 * 7), $thisWeek[0] - 86400];
     }
 
     /**
@@ -64,7 +64,7 @@ class DateHelper
     {
         $thisWeek = self::rangeThisWeek();
 
-        return [self::toTs($thisWeek[0] - 86400), self::toTs($thisWeek[0] - (86400 * 14))];
+        return [$thisWeek[0] - (86400 * 14), $thisWeek[0] - 86400];
     }
 
     /**
@@ -75,8 +75,9 @@ class DateHelper
     public static function rangeThisMonth()
     {
         $currentMonth = date('Y-m-01', time());
+        $currentMonthTs = self::toTs($currentMonth);
 
-        return [self::toTs($currentMonth), self::toTs($currentMonth + (86400 * date('t')))];
+        return [$currentMonthTs, $currentMonthTs + (86400 * (date('t') - 1))];
     }
 
     /**
@@ -92,7 +93,7 @@ class DateHelper
         }
         $lastMonth = date('Y') . '-' . $lastMonth . '-01';
 
-        return [self::toTs($lastMonth), self::toTs($lastMonth + (86400 * date('t', strtotime($lastMonth))))];
+        return [self::toTs($lastMonth), self::toTs($lastMonth) + (86400 * (date('t', strtotime($lastMonth))-1))];
     }
 
     /**
@@ -246,7 +247,7 @@ class DateHelper
     public static function rangeH2($year = null)
     {
         $year = empty($year) ? date('Y') : $year;
-        $start = $year . '-01-07';
+        $start = $year . '-07-01';
         $end = $year . '-12-31';
 
         return [self::toTs($start), self::toTs($end)];

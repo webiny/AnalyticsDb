@@ -97,11 +97,11 @@ class AnalyticsDb
      */
     public function log($entity, $ref = 0, $increment = 1)
     {
-        if (!preg_match('/^([A-z0-9\/\-]+)$/', $entity)) {
+        if (!preg_match('/^([A-z0-9\/\-\_]+)$/', $entity)) {
             throw new AnalyticsDbException('Entity name can only contain ([A-z0-9\/\-]).');
         }
 
-        if (!preg_match('/^([A-z0-9\/\-]+)$/', $ref)) {
+        if (!preg_match('/^([A-z0-9\/\-\_]+)$/', $ref)) {
             throw new AnalyticsDbException('Entity referrer can only contain ([A-z0-9\/\-]).');
         }
 

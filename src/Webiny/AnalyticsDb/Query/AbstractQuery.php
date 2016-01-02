@@ -49,6 +49,11 @@ abstract class AbstractQuery
      */
     protected $collection;
 
+    /**
+     * @var string Name of the current id field.
+     */
+    protected $id;
+
 
     /**
      * This is the callback method that is triggered after the constructor call.
@@ -126,11 +131,16 @@ abstract class AbstractQuery
      * @param string $direction Mongo sort direction: 1 => ascending; -1 => descending
      *
      * @return $this
+     * @throws AnalyticsDbException
      */
     public function sortByTimestamp($direction)
     {
+        if ($this->id != '$ts') {
+            throw new AnalyticsDbException('In order to sort by timestamp, you need to first group by timestamp.');
+        }
+
         $direction = (int)$direction;
-        $this->pipeline['$sort'] = ['ts' => $direction];
+        $this->pipeline['$sort'] = ['_id' => $direction];
 
         return $this;
     }
@@ -156,11 +166,36 @@ abstract class AbstractQuery
      * @param string $direction Mongo sort direction: 1 => ascending; -1 => descending
      *
      * @return $this
+     * @throws AnalyticsDbException
      */
     public function sortByEntityName($direction)
     {
+        if ($this->id != '$entity') {
+            throw new AnalyticsDbException('In order to sort by entity name, you need to first group by entity name.');
+        }
+
         $direction = (int)$direction;
-        $this->pipeline['$sort'] = ['entity' => $direction];
+        $this->pipeline['$sort'] = ['_id' => $direction];
+
+        return $this;
+    }
+
+    /**
+     * Sorts the result by referrer value.
+     *
+     * @param string $direction Mongo sort direction: 1 => ascending; -1 => descending
+     *
+     * @return $this
+     * @throws AnalyticsDbException
+     */
+    public function sortByRef($direction)
+    {
+        if ($this->id != '$ref') {
+            throw new AnalyticsDbException('In order to sort by ref, you need to first group by ref.');
+        }
+
+        $direction = (int)$direction;
+        $this->pipeline['$sort'] = ['_id' => $direction];
 
         return $this;
     }
@@ -173,6 +208,8 @@ abstract class AbstractQuery
     public function groupByTimestamp()
     {
         $this->pipeline['$group'] = ['_id' => '$ts', 'totalCount' => ['$sum' => '$count']];
+
+        $this->id = '$ts';
 
         return $this;
     }
@@ -202,6 +239,22 @@ abstract class AbstractQuery
     public function groupByEntityName()
     {
         $this->pipeline['$group'] = ['_id' => '$entity', 'totalCount' => ['$sum' => '$count']];
+
+        $this->id = '$entity';
+
+        return $this;
+    }
+
+    /**
+     * Group stat records by ref id.
+     *
+     * @return $this
+     */
+    public function groupByRef()
+    {
+        $this->pipeline['$group'] = ['_id' => '$ref', 'totalCount' => ['$sum' => '$count']];
+
+        $this->id = '$ref';
 
         return $this;
     }

@@ -47,13 +47,14 @@ class DimensionsTest extends \PHPUnit_Framework_TestCase
 
         // test $project
         $defaultProject = [
-            'ts'     => 1,
-            'entity' => 1,
-            'month'  => 1,
-            'year'   => 1,
-            'name'   => 1,
-            'value'  => 1,
-            'total'  => 1
+            'ts'        => 1,
+            'entity'    => 1,
+            'month'     => 1,
+            'year'      => 1,
+            'name'      => 1,
+            'value'     => 1,
+            'total'     => 1,
+            'count.100' => 1
         ];
         $this->assertSame($defaultProject, $pipeline[1]['$project']);
     }

@@ -10,6 +10,7 @@
 namespace Webiny\AnalyticsDb\Query;
 
 use Webiny\AnalyticsDb\AnalyticsDb;
+use Webiny\AnalyticsDb\AnalyticsDbException;
 
 /**
  * Class QueryBuilder
@@ -37,6 +38,54 @@ class Dimensions extends AbstractQuery
     }
 
     /**
+     * Sort records by dimension name.
+     *
+     * @param string $direction Mongo sort direction: 1 => ascending; -1 => descending
+     *
+     * @return $this
+     * @throws AnalyticsDbException
+     */
+    public function sortByDimensionName($direction)
+    {
+        if ($this->id != '$name' && $this->id != '$value') {
+            throw new AnalyticsDbException('In order to sort by dimension name, you need to first group by dimension name or dimension value.');
+        }
+
+        $direction = (int)$direction;
+
+        if ($this->id == '$name') {
+            $this->pipeline['$sort'] = ['_id' => $direction];
+        } else {
+            $this->pipeline['$sort'] = ['_id.name' => $direction];
+        }
+
+
+        return $this;
+    }
+
+    /**
+     * Sort records by dimension value.
+     *
+     * @param string $direction Mongo sort direction: 1 => ascending; -1 => descending
+     *
+     * @return $this
+     * @throws AnalyticsDbException
+     */
+    public function sortByDimensionValue($direction)
+    {
+        if ($this->id != '$value') {
+            throw new AnalyticsDbException('In order to sort by dimension value, you need to first group by dimension value.');
+        }
+
+        $direction = (int)$direction;
+
+        $this->pipeline['$sort'] = ['_id.value' => $direction];
+
+
+        return $this;
+    }
+
+    /**
      * Groups the records by dimension name.
      *
      * @return $this
@@ -44,6 +93,8 @@ class Dimensions extends AbstractQuery
     public function groupByDimensionName()
     {
         $this->pipeline['$group'] = ['_id' => '$name', 'totalCount' => ['$sum' => $this->getSumField()]];
+
+        $this->id = '$name';
 
         return $this;
     }
@@ -60,6 +111,8 @@ class Dimensions extends AbstractQuery
             'totalCount' => ['$sum' => $this->getSumField()]
         ];
 
+        $this->id = '$value';
+
         return $this;
     }
 
@@ -73,6 +126,8 @@ class Dimensions extends AbstractQuery
     {
         $this->pipeline['$group'] = ['_id' => '$entity', 'totalCount' => ['$sum' => $this->getSumField()]];
 
+        $this->id = '$entity';
+
         return $this;
     }
 
@@ -85,6 +140,8 @@ class Dimensions extends AbstractQuery
     public function groupByTimestamp()
     {
         $this->pipeline['$group'] = ['_id' => '$ts', 'totalCount' => ['$sum' => $this->getSumField()]];
+
+        $this->id = '$ts';
 
         return $this;
     }
@@ -120,8 +177,8 @@ class Dimensions extends AbstractQuery
         // $group
         $this->pipeline['$group'] = ['_id' => '$ts', 'totalCount' => ['$sum' => $this->getSumField()]];
 
-        // $sort
-        $this->pipeline['$sort'] = ['ts' => 1];
+        // $sort -> by timestamp
+        $this->pipeline['$sort'] = ['_id' => 1];
     }
 
     /**

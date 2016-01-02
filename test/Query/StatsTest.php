@@ -89,19 +89,21 @@ class StatsTest extends \PHPUnit_Framework_TestCase
     public function testSorters()
     {
         $pipeline = $this->instance->getPipeline();
-        $this->assertSame(1, $pipeline[3]['$sort']['ts']);
+        $this->assertSame(1, $pipeline[3]['$sort']['_id']);
 
         $this->instance->sortByCount(-1);
         $pipeline = $this->instance->getPipeline();
         $this->assertSame(-1, $pipeline[3]['$sort']['totalCount']);
 
+        $this->instance->groupByTimestamp();
         $this->instance->sortByTimestamp(-1);
         $pipeline = $this->instance->getPipeline();
-        $this->assertSame(-1, $pipeline[3]['$sort']['ts']);
+        $this->assertSame(-1, $pipeline[3]['$sort']['_id']);
 
+        $this->instance->groupByEntityName();
         $this->instance->sortByEntityName(1);
         $pipeline = $this->instance->getPipeline();
-        $this->assertSame(1, $pipeline[3]['$sort']['entity']);
+        $this->assertSame(1, $pipeline[3]['$sort']['_id']);
     }
 
     public function testGroups()

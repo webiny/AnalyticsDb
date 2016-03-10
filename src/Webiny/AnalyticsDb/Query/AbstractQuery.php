@@ -117,7 +117,7 @@ abstract class AbstractQuery
     public function getResult()
     {
         $result = $this->mongo->aggregate($this->getCollectionName(), $this->getPipeline());
-
+        $result = $result->toArray();
         if (is_array($result) && isset($result['ok']) && $result['ok'] == 1) {
             return $result['result'];
         }

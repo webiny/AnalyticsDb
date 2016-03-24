@@ -9,6 +9,7 @@
 
 namespace Webiny\AnalyticsDb;
 
+use MongoDB\Model\CollectionInfo;
 use Webiny\Component\Mongo\Index\CompoundIndex;
 use Webiny\Component\Mongo\Mongo;
 
@@ -163,7 +164,7 @@ class AnalyticsDb
                     '$inc'         => ['count' => $e->getIncrement()],
                     '$setOnInsert' => $entry
                 ], // options
-                ['upsert' => 1]);
+                ['upsert' => true]);
 
             // insert or update the MONTHLY stat
             unset($entry['ts']);
@@ -179,7 +180,7 @@ class AnalyticsDb
                     '$inc'         => ['count' => $e->getIncrement()],
                     '$setOnInsert' => $entry
                 ], // options
-                ['upsert' => 1]);
+                ['upsert' => true]);
 
             // insert dimensions for the entry
             $dimEntry = $dimensionSkeleton;
@@ -206,7 +207,7 @@ class AnalyticsDb
                         ],
                         '$setOnInsert' => $dimEntry
                     ], // options
-                    ['upsert' => 1]);
+                    ['upsert' => true]);
             }
         }
 
@@ -233,9 +234,18 @@ class AnalyticsDb
      */
     private function createCollections()
     {
-        $collections = $this->mongo->getCollectionNames()->toArray();
+        $collections = $this->mongo->listCollections();
 
-        if (!array_search(self::ADB_STATS_DAILY, $collections)) {
+        $collectionsCreated = false;
+        foreach ($collections as $collection) {
+            /* @var $collection CollectionInfo */
+            if ($collection->getName() == self::ADB_STATS_DAILY) {
+                $collectionsCreated = true;
+                break;
+            }
+        }
+
+        if (!$collectionsCreated) {
 
             // create collections
             $this->mongo->createCollection(self::ADB_STATS_DAILY);

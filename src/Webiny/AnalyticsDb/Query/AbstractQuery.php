@@ -107,8 +107,8 @@ abstract class AbstractQuery
     {
         return 'db.' . $this->getCollectionName() . '.aggregate(' . json_encode($this->getPipeline()) . ');';
     }
-
-    /**
+    
+     /**
      * This method does your query lookup and returns the result in form of an array.
      * In case if there are no records to return, false is returned.
      *
@@ -117,13 +117,7 @@ abstract class AbstractQuery
     public function getResult()
     {
         $result = $this->mongo->aggregate($this->getCollectionName(), $this->getPipeline());
-        $result = $result->toArray();
-
-        if (is_array($result) && isset($result['ok']) && $result['ok'] == 1) {
-            return $result['result'];
-        }
-
-        return false;
+        return $result->toArray();
     }
 
     /**

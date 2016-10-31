@@ -158,6 +158,7 @@ class Dimensions extends AbstractQuery
         // $match
         $this->pipeline['$match']['entity'] = $this->entity;
         $this->pipeline['$match']['ts'] = ['$gte' => $this->dateRange[0], '$lte' => $this->dateRange[1]];
+        $this->pipeline['$match']['count.' . $this->ref] = ['$exists' => true];
 
         // $project
         $this->pipeline['$project'] = [

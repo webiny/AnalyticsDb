@@ -234,12 +234,12 @@ class AnalyticsDb
      */
     private function createCollections()
     {
-        $collections = $this->mongo->listCollections();
+        $collections = $this->mongo->getCollectionNames();
 
         $collectionsCreated = false;
         foreach ($collections as $collection) {
             /* @var $collection CollectionInfo */
-            if ($collection->getName() == self::ADB_STATS_DAILY) {
+            if ($collection == self::ADB_STATS_DAILY) {
                 $collectionsCreated = true;
                 break;
             }

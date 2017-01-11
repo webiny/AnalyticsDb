@@ -15,6 +15,7 @@ $analytics->log('visitor')->addDimension('browser', 'chrome')->addDimension('cou
 
 // store some revenue data
 $analytics->log('revenue', 0, 120.00)
+    ->addAttribute('brand', 'Foo')
     ->addDimension('product', 'hdd', 79.50)
     ->addDimension('product', 'mouse', 20.50)
     ->addDimension('tax', 'in-country', 20);
@@ -41,6 +42,46 @@ $result = $query->groupByDimensionName()->sortByCount(-1)->getResult();
 
 The component requires an instance of `\Webiny\Component\Mongo\Mongo` to access your Mongo database where it will create
 several collections to store the data.
+
+##Dimensions
+
+Dimensions track different data which is still tied to your entity.
+For example say you have a product A, in 2 colors, red and blue. The product would be your entity, and colors would be your dimensions.
+
+```php
+// track a view on the red product
+$analytics->log('product', 'A')
+  ->addDimension('color', 'red');
+
+// track a view on the blue product
+$analytics->log('product', 'A')
+  ->addDimension('color', 'blue');
+```
+
+When tracking the dimensions, you can then get stats like "show me the views on all `red` version of my product".
+
+```php
+$query = $a->query('product', 'A', DateHelper::rangeLast30Days());
+$result = $query->dimension('color', 'red')->groupByDimensionValue()->sortByCount(-1)->getResult();
+```
+
+
+##Attributes
+
+Attributes are much simpler than dimensions. Attributes are just additional tags you can attach to an entity so you can group, sort and filter by them.
+A typical use-case for attributes is say you have a product, which has a certain brand and you want to be able to get a list of top 10 products for a certain brand.
+
+```php
+$analytics->log('product', 'A')->addAttribute('brand', '10');
+```
+You can add multiple attributes to a product.
+
+Now you can do something like this:
+
+```php
+// show me top 10 products for brand "10" for last 30 days
+$query = $a->query('product', null, DateHelper::rangeLast30Days());
+$result = $query->stats()->addAttributeFilter('brand', 10)->sortByCount('-1')->limit(10);
 
 ## Storing data
 

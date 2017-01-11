@@ -66,7 +66,7 @@ $result = $query->dimension('color', 'red')->groupByDimensionValue()->sortByCoun
 ```
 
 
-##Attributes
+## Attributes
 
 Attributes are much simpler than dimensions. Attributes are just additional tags you can attach to an entity so you can group, sort and filter by them.
 A typical use-case for attributes is say you have a product, which has a certain brand and you want to be able to get a list of top 10 products for a certain brand.
@@ -82,6 +82,7 @@ Now you can do something like this:
 // show me top 10 products for brand "10" for last 30 days
 $query = $a->query('product', null, DateHelper::rangeLast30Days());
 $result = $query->stats()->addAttributeFilter('brand', 10)->sortByCount('-1')->limit(10);
+```
 
 ## Storing data
 

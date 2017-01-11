@@ -41,6 +41,17 @@ class Stats extends AbstractQuery
         return $this;
     }
 
+    public function addAttributeFilter($name, $value = null)
+    {
+        if (empty($value)) {
+            $this->pipeline['$match']['attributes.' . $name] = ['$exists' => true];
+        } else {
+            $this->pipeline['$match']['attributes.' . $name] = $value;
+        }
+
+        return $this;
+    }
+
     /**
      * This is the callback method that is triggered after the constructor call.
      *

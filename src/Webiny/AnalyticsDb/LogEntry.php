@@ -35,6 +35,11 @@ class LogEntry
      */
     private $increment;
 
+    /**
+     * @var array List of attributes attached to the entity that you can then filter on
+     */
+    private $attributes;
+
 
     /**
      * Base constructor.
@@ -45,6 +50,7 @@ class LogEntry
     {
         $this->name = $name;
         $this->dimensions = [];
+        $this->attributes = [];
         $this->increment = 1;
     }
 
@@ -125,5 +131,30 @@ class LogEntry
     public function getDimensions()
     {
         return $this->dimensions;
+    }
+
+    /**
+     * Adds an attribute to your entity so you can filter on it.
+     *
+     * @param string      $name
+     * @param null|string $value
+     */
+    public function addAttribute($name, $value = null)
+    {
+        if (!empty($value)) {
+            $this->attributes[] = [$name => $value];
+        } else {
+            $this->attributes[] = [$name];
+        }
+    }
+
+    /**
+     * Returns a list of associated attributes.
+     * 
+     * @return array
+     */
+    public function getAttributes()
+    {
+        return $this->attributes;
     }
 }

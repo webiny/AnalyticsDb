@@ -153,6 +153,11 @@ class AnalyticsDb
             $entry['entity'] = $e->getName();
             $entry['ref'] = $e->getRef();
 
+            // check if we have attributes defined
+            if (count($e->getAttributes()) > 0) {
+                $entry['attributes'] = $e->getAttributes();
+            }
+
             // insert or update the DAILY stat
             $this->mongo->update(self::ADB_STATS_DAILY, // match
                 [
@@ -253,14 +258,11 @@ class AnalyticsDb
             $this->mongo->createCollection(self::ADB_DIMS);
 
             // ensure indexes
-            $this->mongo->createIndex(self::ADB_STATS_DAILY,
-                new CompoundIndex('entityTsEntry', ['entity', 'ref', 'ts'], true, true));
+            $this->mongo->createIndex(self::ADB_STATS_DAILY, new CompoundIndex('entityTsEntry', ['entity', 'ref', 'ts'], true, true));
 
-            $this->mongo->createIndex(self::ADB_STATS_MONTHLY,
-                new CompoundIndex('entityMonthEntry', ['entity', 'ref', 'ts'], true, true));
+            $this->mongo->createIndex(self::ADB_STATS_MONTHLY, new CompoundIndex('entityMonthEntry', ['entity', 'ref', 'ts'], true, true));
 
-            $this->mongo->createIndex(self::ADB_DIMS,
-                new CompoundIndex('dimension', ['name', 'value', 'entity', 'ts'], true, true));
+            $this->mongo->createIndex(self::ADB_DIMS, new CompoundIndex('dimension', ['name', 'value', 'entity', 'ts'], true, true));
 
             $this->mongo->createIndex(self::ADB_DIMS, new CompoundIndex('dimension_entity', ['entity', 'ts'], true));
         }

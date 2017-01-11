@@ -44,9 +44,11 @@ class Stats extends AbstractQuery
     public function addAttributeFilter($name, $value = null)
     {
         if (empty($value)) {
-            $this->pipeline['$match']['attributes.' . $name] = ['$exists' => true];
+            $this->pipeline['$match']['attributes.name'] = $name;
+            $this->pipeline['$match']['attributes.value'] = 0;
         } else {
-            $this->pipeline['$match']['attributes.' . $name] = $value;
+            $this->pipeline['$match']['attributes.name'] = $name;
+            $this->pipeline['$match']['attributes.value'] = $value;
         }
 
         return $this;

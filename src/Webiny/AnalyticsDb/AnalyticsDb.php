@@ -259,8 +259,12 @@ class AnalyticsDb
 
             // ensure indexes
             $this->mongo->createIndex(self::ADB_STATS_DAILY, new CompoundIndex('entityTsEntry', ['entity', 'ref', 'ts'], true, true));
+            $this->mongo->createIndex(self::ADB_STATS_DAILY,
+                new CompoundIndex('entityTsAttrEntry', ['entity', 'ts', 'attributes.name', 'attributes.value'], false, false));
 
             $this->mongo->createIndex(self::ADB_STATS_MONTHLY, new CompoundIndex('entityMonthEntry', ['entity', 'ref', 'ts'], true, true));
+            $this->mongo->createIndex(self::ADB_STATS_MONTHLY,
+                new CompoundIndex('entityMonthAttrEntry', ['entity', 'ts', 'attributes.name', 'attributes.value'], false, false));
 
             $this->mongo->createIndex(self::ADB_DIMS, new CompoundIndex('dimension', ['name', 'value', 'entity', 'ts'], true, true));
 

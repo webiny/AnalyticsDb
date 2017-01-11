@@ -146,9 +146,9 @@ class LogEntry
     public function addAttribute($name, $value = null)
     {
         if (!empty($value)) {
-            $this->attributes[] = [$name => $value];
+            $this->attributes[] = ['name' => $name, 'value' => $value];
         } else {
-            $this->attributes[] = [$name];
+            $this->attributes[] = ['name' => $name, 'value' => 0];
         }
 
         return $this;

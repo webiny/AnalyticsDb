@@ -9,6 +9,8 @@
 
 namespace Webiny\AnalyticsDb;
 
+use phpDocumentor\Reflection\Types\This;
+
 /**
  * Class LogEntry
  * @package Webiny\AnalyticsDb
@@ -138,6 +140,8 @@ class LogEntry
      *
      * @param string      $name
      * @param null|string $value
+     *
+     * @return $this
      */
     public function addAttribute($name, $value = null)
     {
@@ -146,11 +150,13 @@ class LogEntry
         } else {
             $this->attributes[] = [$name];
         }
+
+        return $this;
     }
 
     /**
      * Returns a list of associated attributes.
-     * 
+     *
      * @return array
      */
     public function getAttributes()
